@@ -31,7 +31,7 @@ export default function Products() {
 
   return (
     <ClientLayout>
-      <ProductsPage products={products} breadCrumbs={`Kids`}/>
+      <ProductsPage products={products} breadCrumbs={`Kids`} gender={gender}/>
     </ClientLayout>
   );
 }

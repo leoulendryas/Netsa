@@ -5,27 +5,38 @@ import Header from '@/components/common/header/page';
 import Footer from '@/components/common/footer/page';
 import ClientLayout from '../../ClientLayout';
 
+// types.ts
+
 interface ProductImage {
+  id: number;
   image_url: string;
   position: string;
+  position_sequence: number;
+}
+
+interface Size {
+  id: number;
+  size: string;
+}
+
+interface Fit {
+  id: number;
+  fit: string;
 }
 
 interface Product {
   id: number;
   name: string;
   description: string;
-  size: string;
   color: string;
-  fit: string;
   price: string;
   is_featured: boolean;
   is_new: boolean;
-  gender: string;
+  gender: string | null;
   ProductImages: ProductImage[];
-  Category: {
-    id: number;
-    name: string;
-  };
+  category_id: number;
+  Sizes: Size[];
+  Fits: Fit[];
 }
 
 interface ProductPageProps {
