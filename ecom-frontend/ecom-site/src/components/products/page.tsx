@@ -68,26 +68,31 @@ interface ProductsPageProps {
   products: Product[];
   title?: string;
   breadCrumbs: string;
+  gender?: string;
 }
 
-const ProductsPage: React.FC<ProductsPageProps> = ({ products, breadCrumbs }) => {
+const ProductsPage: React.FC<ProductsPageProps> = ({ products = [], breadCrumbs, gender }) => {
+  // Ensure filteredProducts is always initialized as an array
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [filters, setFilters] = useState<Record<string, any>>({});
   const params = useParams();
   const id = params?.id as string | undefined;
+
+  // Safely map over products, ensuring it's an array
   const [likedProducts, setLikedProducts] = useState<boolean[]>(
-    products.map((product) => product.liked)
+    Array.isArray(products) ? products.map((product) => product.liked) : []
   );
   const { wishlist, setWishlist } = useWishlist();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
-    const updatedLikes = products.map((product) =>
+    const updatedLikes = filteredProducts.map((product) =>
       wishlist.some((item) => item.productId === product.id)
     );
     setLikedProducts(updatedLikes);
-  }, [products, wishlist]);
+  }, [filteredProducts, wishlist]);
 
   const toggleLike = useCallback(
     async (productId: number, index: number) => {
@@ -163,11 +168,11 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ products, breadCrumbs }) =>
     if (productIdToLike && token && userId) {
       toggleLike(
         parseInt(productIdToLike, 10),
-        products.findIndex((p) => p.id === parseInt(productIdToLike, 10))
+        filteredProducts.findIndex((p) => p.id === parseInt(productIdToLike, 10))
       );
       localStorage.removeItem("pendingLike");
     }
-  }, [products, toggleLike]);
+  }, [filteredProducts, toggleLike]);
 
   const handleLoadMore = async () => {
     setLoading(true);
@@ -182,6 +187,48 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ products, breadCrumbs }) =>
     { label: `${breadCrumbs}`, href: '/products/men' },
   ];
 
+  const handleFilterChange = async (newFilters: Record<string, any>, gender?: string) => {
+    setFilters(newFilters);
+    setLoading(true);
+  
+    try {
+      const filterParams = new URLSearchParams();
+  
+      // Iterate over the filter values and append them as query params
+      Object.keys(newFilters).forEach((key) => {
+        const value = newFilters[key];
+  
+        if (Array.isArray(value)) {
+          filterParams.append(key, value.join(','));
+        } else if (typeof value === 'string') {
+          filterParams.append(key, value);
+        }
+      });
+  
+      // Handle gender filter
+      if (gender) {
+        filterParams.append('gender', gender);
+      } else if (!filterParams.has('gender') && params?.id) {
+        const genderParam = Array.isArray(params.id) ? params.id.join(',') : params.id;
+        filterParams.append('gender', genderParam);
+      }
+  
+      const queryString = filterParams.toString();
+      const response = await fetch(`/api/filteredProducts?${queryString}`);
+  
+      if (response.ok) {
+        const filteredData = await response.json();
+        setFilteredProducts(filteredData);
+      } else {
+        console.error("Failed to fetch filtered products");
+      }
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };  
+  
   return (
     <>
       <Breadcrumb items={breadcrumbItems} />
@@ -195,16 +242,16 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ products, breadCrumbs }) =>
               {isFilterOpen ? "Hide Filters" : "Show Filters"}
             </button>
             <div className={`${isFilterOpen ? "block" : "hidden"} md:block`}>
-              <FilterSection />
+              <FilterSection onFilterChange={handleFilterChange} />
             </div>
           </div>
 
           <div className="w-full md:w-full overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold">{products.length} Items</h2>
+              <h2 className="text-lg font-semibold">{filteredProducts.length} Items</h2>
             </div>
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product, index) => (
+              {filteredProducts.map((product, index) => (
                 <ProductCard
                   key={product.id}
                   imageUrl={product.ProductImages[0]?.image_url || ""}

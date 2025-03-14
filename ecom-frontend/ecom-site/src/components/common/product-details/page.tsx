@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import Breadcrumb from "@/components/common/breadCrumb/page";
 import Notification from '@/components/common/notification/page';
+import { io, Socket } from "socket.io-client";
 
 interface ProductImage {
   id: number;
@@ -54,13 +55,32 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
     other: product.ProductImages.find((img) => img.position === 'other')?.image_url || '',
   };
 
+  const [socket, setSocket] = useState<Socket | null>(null); 
+  const [realTimeProduct, setRealTimeProduct] = useState<Product>(product);
+
+  useEffect(() => {
+    const socketInstance = io("http://localhost:5000");
+    setSocket(socketInstance);
+
+    socketInstance.on("productUpdate", (updatedProduct: Product) => {
+      console.log("Product updated:", updatedProduct);
+      setRealTimeProduct(updatedProduct); 
+    });
+
+    socketInstance.emit("subscribeProduct", { productId: product.id });
+
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [product.id]);
+
   useEffect(() => {
     const fetchProductsByName = async () => {
       try {
         const response = await fetch(`/api/getProductByName?name=${product.name}`);
         if (response.ok) {
-          const data: Product[] = await response.json(); // Assuming the API returns an array
-          setFetchedProducts(data); // Assuming the API returns an array
+          const data: Product[] = await response.json();
+          setFetchedProducts(data);
         } else {
           console.error('Failed to fetch products');
         }
@@ -242,7 +262,7 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
           </div>
         </div>
 
-        <div className="w-full md:w-2/5 mt-0 md:ml-8 flex flex-col items-center">
+        <div className="w-full md:w-2/5 my-10 md:my-0 md:ml-8 flex flex-col items-center sticky top-[160px] self-start">
           <h1 className="text-2xl lg:text-3xl font-semibold">{product.name}</h1>
           <p className="text-xl md:text-2xl mt-2 text-gray font-medium">{product.color}</p>
           <p className="text-xl md:text-2xl mt-2 font-medium">{product.price} Birr</p>

@@ -1,9 +1,11 @@
+"use client"
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Button1 from '../common/button/button-one/page';
 import Button5 from '../common/button/button-five/page';
 import Cookies from 'js-cookie';
-import Notification from '@/components/common/notification/page'; 
+import Notification from '@/components/common/notification/page';
+import { io } from 'socket.io-client';
 
 interface Order {
   id: number;
@@ -33,9 +35,11 @@ const AccountPage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedInfo, setEditedInfo] = useState(userInfo);
   const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
-  const orderId = localStorage.getItem('lastOrderId');
+  const orderId = Cookies.get('lastOrderId');
 
   useEffect(() => {
+    const socket = io('http://localhost:5000'); // Connect to the WebSocket server
+
     const fetchUserInfo = async () => {
       try {
         const response = await fetch('/api/getUser');
@@ -66,8 +70,20 @@ const AccountPage: React.FC = () => {
       }
     };
 
+    // Listening to WebSocket updates for the order
+    socket.on('orderStatusUpdate', (updatedOrder: Order) => {
+      if (updatedOrder.id === Number(orderId)) {
+        setOrder(updatedOrder);
+        setNotification({ message: 'Order status updated', type: 'info' });
+      }
+    });
+
     fetchUserInfo();
     fetchOrder();
+
+    return () => {
+      socket.disconnect(); // Clean up the WebSocket connection on component unmount
+    };
   }, [orderId]);
 
   const handleEdit = () => {
@@ -115,6 +131,7 @@ const AccountPage: React.FC = () => {
   const handleLogout = async () => {
     Cookies.remove('userId');
     Cookies.remove('token');
+    Cookies.remove('lastOrderId');
     setNotification({ message: 'Successfully logged out', type: 'info' });
     router.push('/');
   };
@@ -235,16 +252,23 @@ const AccountPage: React.FC = () => {
             <p className="text-gray-800 font-semibold">
               Total: <span className="font-bold">${order.total_amount}</span>
             </p>
-            <p className="text-gray-800 font-semibold">
-              Payment Method: <span className="font-bold">{order.payment_method}</span>
+            <p className="text-gray-800">
+              Payment Method: <span className="font-semibold">{order.payment_method}</span>
             </p>
-            <p className="text-gray-800 font-semibold">
-              Order Items: <span className="font-bold">{order.OrderItems.length}</span>
-            </p>
+            <div className="text-gray-800">
+              {order.OrderItems.map((item) => (
+                <div key={item.id} className="flex justify-between">
+                  <span className="font-semibold">Product #{item.product_id}</span>
+                  <span>
+                    {item.quantity} x ${item.price}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : (
-        <p>Loading order details...</p>
+        <p className="text-gray-800">No order found</p>
       )}
     </div>
   );
