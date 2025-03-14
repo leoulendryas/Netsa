@@ -1,0 +1,51 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16
+    container_name: clothing_site_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: SscAAiTUnity
+      POSTGRES_DB: ecommerce_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - clothing_site_network
+
+  backend:
+    build:
+      context: ./ecom-backend
+      dockerfile: Dockerfile
+    container_name: clothing_site_backend
+    ports:
+      - '5000:5000'
+    environment:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASSWORD: SscAAiTUnity
+      DB_NAME: ecommerce_db
+    depends_on:
+      - db
+    networks:
+      - clothing_site_network
+
+  frontend:
+    build:
+      context: ./ecom-frontend/ecom-site
+      dockerfile: Dockerfile
+    container_name: clothing_site_frontend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    networks:
+      - clothing_site_network
+
+volumes:
+  postgres_data:
+
+networks:
+  clothing_site_network:
+    driver: bridge
