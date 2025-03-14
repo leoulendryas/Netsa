@@ -9,7 +9,7 @@ export default function Products() {
   const [error, setError] = useState<null | string>(null);
 
   const gender = "Men"; 
-
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -31,7 +31,7 @@ export default function Products() {
 
   return (
     <ClientLayout>
-      <ProductsPage products={products} breadCrumbs={`Mens`} />
+      <ProductsPage products={products} breadCrumbs={`Mens`} gender={gender} />
     </ClientLayout>
   );
 }

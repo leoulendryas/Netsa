@@ -1,8 +1,34 @@
 const { sequelize } = require('./config/db');
 const app = require('./app');
+const http = require('http');
+const socketIO = require('socket.io');
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
+// Create an HTTP server with the Express app
+const server = http.createServer(app);
+
+// Initialize Socket.IO for WebSocket connections
+const io = socketIO(server, {
+  cors: {
+    origin: '*',  // Adjust based on your security policies
+    methods: ['GET', 'POST']
+  }
+});
+
+// Handle WebSocket connections
+io.on('connection', (socket) => {
+  console.log('New client connected:', socket.id);
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+// Export the io instance so it can be used in other files
+module.exports = io;
+
+// Authenticate and sync database, then start server
 sequelize.authenticate()
   .then(() => {
     console.log('Database connected');
@@ -10,7 +36,7 @@ sequelize.authenticate()
   })
   .then(() => {
     console.log('Database synced');
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   })

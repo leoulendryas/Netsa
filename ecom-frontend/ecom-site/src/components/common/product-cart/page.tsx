@@ -37,6 +37,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
     };
   }, [isOpen]);
 
+  // Fetch product details based on cart items
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
@@ -60,6 +61,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
     fetchProductDetails();
   }, [cartItems]);
 
+  // Recalculate subtotal when cart items are updated
   useEffect(() => {
     const newSubtotal = detailedCartItems.reduce((acc, item) => acc + parseFloat(item.price_at_time_of_addition) * item.quantity, 0);
     setSubtotal(newSubtotal);
@@ -135,36 +137,30 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
           <div className="space-y-2">
             <div className="flex justify-between text-gray">
               <span>Sub Total:</span>
-              <span>{subtotal.toFixed(2)}Birr</span>
+              <span>{subtotal.toFixed(2)} Birr</span>
             </div>
             <div className="flex justify-between text-gray">
               <span>Delivery:</span>
-              <span>{deliveryFee.toFixed(2)}Birr</span>
+              <span>{deliveryFee.toFixed(2)} Birr</span>
             </div>
-            <div className="flex justify-between text-gray">
+            <div className="flex justify-between font-medium text-xl">
               <span>Total:</span>
-              <span>{total.toFixed(2)}Birr</span>
+              <span>{total.toFixed(2)} Birr</span>
             </div>
           </div>
 
-          {/* Line break below total */}
-          <hr className="border-gray my-4" />
-
           {/* Checkout Button */}
-          <div className="w-full py-2 my-10 pb-10 text-center">
-            <Button5 text="CHECK OUT" onClick={handleCheckout} />
+          <div className="w-full flex justify-center mt-6">
+            <Button5 text="Proceed to Checkout" onClick={handleCheckout} />
           </div>
         </div>
       </div>
 
-      {/* Conditionally Render Checkout Component */}
       {isCheckoutOpen && (
-        <div className="fixed inset-0 z-50 bg-white">
-          <Checkout 
-            subtotal={subtotal} 
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <Checkout subtotal={total} 
             deliveryFee={deliveryFee} 
-            items={transformedItems}
-          />
+            items={transformedItems} />
         </div>
       )}
     </>
