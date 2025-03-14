@@ -1,7 +1,6 @@
 const { sequelize, models } = require('../config/db');  // Import sequelize
 const Order = models.Order;
 const OrderItem = models.OrderItem;
-const Cart = models.Cart;
 const CartItem = models.CartItem;
 
 // Create an order
@@ -12,20 +11,22 @@ exports.createOrder = async (req, res) => {
     // Create the order
     const order = await Order.create(req.body, { transaction: t });
 
-    // Create the order items, including size
+    // Map order items, including size
     const orderItems = req.body.items.map(item => ({
       order_id: order.id,
       product_id: item.product_id,
       quantity: item.quantity,
       price: item.price,
-      size: item.size, // Include size here
+      size: item.size, // Include size
     }));
+
+    // Bulk create the order items
     await OrderItem.bulkCreate(orderItems, { transaction: t });
 
-    // Empty the cart
+    // Empty the cart by removing all cart items for the given cart_id
     await CartItem.destroy({ where: { cart_id: req.body.cart_id }, transaction: t });
 
-    // Commit transaction
+    // Commit the transaction
     await t.commit();
 
     res.status(201).json(order);

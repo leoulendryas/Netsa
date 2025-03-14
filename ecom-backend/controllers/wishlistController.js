@@ -22,7 +22,11 @@ exports.getWishlist = async (req, res) => {
       include: [
         {
           model: models.Product,
-          include: [models.ProductImage], 
+          include: [
+            models.ProductImage,
+            { model: models.Size, through: { attributes: [] } }, // Include sizes
+            { model: models.Fit, through: { attributes: [] } }   // Include fits
+          ],
         },
       ],
     });
