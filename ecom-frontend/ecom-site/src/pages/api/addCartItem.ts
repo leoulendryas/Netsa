@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: 'Product ID, quantity, and price are required' });
     }
 
-    const addCartItemResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/items`, {
+    const addCartItemResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/items`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
