@@ -2,22 +2,34 @@ const Sequelize = require('sequelize');
 const dotenv = require('dotenv');
 dotenv.config();
 
+// Create Sequelize instance
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 5432, // Add port from env if defined
     dialect: 'postgres',
     logging: false,
     define: {
-      freezeTableName: true, // This ensures Sequelize does not pluralize table names
-      timestamps: true, // Keep timestamps if you want to use `createdAt` and `updatedAt`
+      freezeTableName: true, // Prevent pluralization
+      timestamps: true,      // Keep createdAt/updatedAt
     },
-    sync: { sync: false, alter: true }, // Disable automatic syncing to avoid table duplication
+    sync: { sync: false, alter: false}, // Disable automatic syncing
   }
 );
 
+// Test the DB connection
+sequelize.authenticate()
+  .then(() => {
+    console.log('✅ Connected to DB:', process.env.DB_NAME, '@', process.env.DB_HOST, ':', process.env.DB_PORT);
+  })
+  .catch(err => {
+    console.error('❌ Database connection failed:', err.message);
+  });
+
+// Load models
 const models = {
   Cart: require('../models/cart')(sequelize, Sequelize.DataTypes),
   CartItem: require('../models/cartItem')(sequelize, Sequelize.DataTypes),
@@ -28,8 +40,8 @@ const models = {
   Product: require('../models/product')(sequelize, Sequelize.DataTypes),
   ProductImage: require('../models/productImage')(sequelize, Sequelize.DataTypes),
   SaleProduct: require('../models/saleProduct')(sequelize, Sequelize.DataTypes),
-  Size: require('../models/size')(sequelize, Sequelize.DataTypes),   // Add Size model here
-  Fit: require('../models/fit')(sequelize, Sequelize.DataTypes),     // Add Fit model here
+  Size: require('../models/size')(sequelize, Sequelize.DataTypes),
+  Fit: require('../models/fit')(sequelize, Sequelize.DataTypes),
   User: require('../models/user')(sequelize, Sequelize.DataTypes),
   Wishlist: require('../models/wishlist')(sequelize, Sequelize.DataTypes),
 };
