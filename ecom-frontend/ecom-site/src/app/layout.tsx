@@ -5,8 +5,8 @@ const poppins = Poppins({ subsets: ["latin"], weight: ["400", "600", "700"] });
 const lato = Lato({ subsets: ["latin"], weight: ["400", "700"] });
 
 export const metadata = {
-  title: "Brand Name",
-  description: "Description about brand.",
+  title: "Netsa",
+  description: "Where style meets culture and quality.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
