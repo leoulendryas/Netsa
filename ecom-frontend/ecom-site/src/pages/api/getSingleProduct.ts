@@ -4,7 +4,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { id } = req.query;
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`);
     
     if (!response.ok) {
       return res.status(response.status).json({ message: 'Error fetching product details' });
