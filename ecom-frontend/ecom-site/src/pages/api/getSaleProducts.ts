@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sale-products`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sale-products`);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch sale products. Status: ${response.status}`);
