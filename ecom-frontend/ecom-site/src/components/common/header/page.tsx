@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaHeart, FaRegHeart, FaUser, FaShoppingBag, FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
+import Image from 'next/image'; 
 
 const getCookie = (name: string) => {
   const cookieMatch = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
@@ -18,7 +19,6 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-
     const token = getCookie('token');
     console.log('Token:', token);
 
@@ -52,7 +52,19 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
       }`}
     >
       <div className="flex items-center">
-        <a href="/" className="font-medium text-xs">LOGO HERE</a>
+        {/* CIRCULAR LOGO FIX START */}
+        <a href="/" className="flex items-center">
+          <div className="relative w-8 h-8 overflow-hidden rounded-full">
+            <Image 
+              src="/logo.png" 
+              alt="Logo" 
+              fill 
+              className="object-cover" 
+              priority 
+            />
+          </div>
+        </a>
+        {/* CIRCULAR LOGO FIX END */}
       </div>
 
       <nav
