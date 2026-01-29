@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: 'User ID not found in cookies' });
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${userId}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
