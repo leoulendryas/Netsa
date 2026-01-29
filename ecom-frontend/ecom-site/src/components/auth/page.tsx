@@ -126,8 +126,16 @@ const AuthPage = () => {
 
       <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center p-4 sm:p-8">
         <div className="text-center mb-4 lg:mb-6 space-y-2 lg:space-y-4">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">LOGO</h1>
-          <p className="text-black text-2xl font-medium">JOIN BRAND</p>
+          <div className="relative w-32 h-16 overflow-hidden">
+            <Image 
+              src="/logo.png" 
+              alt="Netsa Logo" 
+              fill 
+              className="object-contain" 
+              priority 
+            />
+          </div>
+          <p className="text-black text-2xl font-medium">JOIN NETSA</p>
         </div>
         
         <div className="relative flex flex-col items-center mb-8">
