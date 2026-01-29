@@ -28,7 +28,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   // Establish WebSocket connection and handle events
   useEffect(() => {
-    const socketInstance = io("http://localhost:5000");  // Replace with your server address
+    const socketInstance = io("https://netsa-backend.onrender.com");  // Replace with your server address
     setSocket(socketInstance);
 
     // Listen for cart updates from the server
