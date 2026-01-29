@@ -44,7 +44,7 @@ const AuthPage = () => {
   });
 
   const texts = [
-    "Welcome to Brand, where style meets culture.",
+    "Welcome to Netsa, where style meets culture.",
     "Discover unique fashion tailored just for you.",
     "Join our community and stay ahead in fashion.",
   ];
