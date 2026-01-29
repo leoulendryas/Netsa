@@ -5,7 +5,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { user_id, address, phone_number } = req.body;
 
     try {
-      const response = await fetch('http://localhost:5000/api/customer-details', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/customer-details`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
