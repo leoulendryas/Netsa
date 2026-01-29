@@ -3,7 +3,7 @@ const app = require('./app');
 const http = require('http');
 const socketIO = require('socket.io');
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 
 // Create an HTTP server with the Express app
 const server = http.createServer(app);
@@ -36,7 +36,7 @@ sequelize.authenticate()
   })
   .then(() => {
     console.log('Database synced');
-    server.listen(PORT, () => {
+    server.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
     });
   })
