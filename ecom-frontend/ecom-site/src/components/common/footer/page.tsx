@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
               <li><a href="#" className="hover:underline">Payment options</a></li>
               <li><a href="#" className="hover:underline">Delivery information</a></li>
               <li><a href="#" className="hover:underline">Orders</a></li>
-              <li><a href="#" className="hover:underline">Contact brand</a></li>
+              <li><a href="#" className="hover:underline">Contact netsa</a></li>
             </ul>
           </div>
 
@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
             <ul
               className={`space-y-2 text-sm text-darkGray font-medium md:block ${companyOpen ? 'block' : 'hidden'}`}
             >
-              <li><a href="#" className="hover:underline">About brand</a></li>
+              <li><a href="#" className="hover:underline">About netsa</a></li>
               <li><a href="#" className="hover:underline">Blog</a></li>
               <li><a href="#" className="hover:underline">Investors</a></li>
             </ul>
@@ -110,7 +110,7 @@ const Footer: React.FC = () => {
         {/* Bottom Section: Copyright and Links */}
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600">
           <span className="text-darkGray font-medium text-base mb-1 md:mb-0">
-            &copy; 2024 brand.inc. All Rights Reserved
+            &copy; 2026 netsa.inc. All Rights Reserved
           </span>
           <div className="flex space-x-4">
             <a href="#" className="hover:underline text-darkGray font-medium text-base">Privacy Policy</a>
