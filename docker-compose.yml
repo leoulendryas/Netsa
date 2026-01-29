@@ -1,16 +1,21 @@
-version: '3.9'
+version: "3.9"
+
 services:
   db:
     image: postgres:16
     container_name: clothing_site_db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: SscAAiTUnity
-      POSTGRES_DB: ecommerce_db
+    env_file:
+      - .env
     ports:
-      - '5433:5432'
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
     networks:
       - clothing_site_network
 
@@ -20,14 +25,13 @@ services:
       dockerfile: Dockerfile
     container_name: clothing_site_backend
     ports:
-      - '5000:5000'
-    environment:
-      DB_HOST: localhost
-      DB_USER: postgres
-      DB_PASSWORD: SscAAiTUnity
-      DB_NAME: ecommerce_db
+      - "5000:5000"
+    env_file:
+      - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - clothing_site_network
 
@@ -37,9 +41,10 @@ services:
       dockerfile: Dockerfile
     container_name: clothing_site_frontend
     ports:
-      - '3000:3000'
+      - "3000:3000"
     depends_on:
       - backend
+    restart: unless-stopped
     networks:
       - clothing_site_network
 
